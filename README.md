@@ -5,6 +5,9 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/trippzac/PCA/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/trippzac/PCA/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/trippzac/PCA/graph/badge.svg)](https://app.codecov.io/gh/trippzac/PCA)
 <!-- badges: end -->
 
 The goal of PCA is to recreate the functionality of built-in functions
