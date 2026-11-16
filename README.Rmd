@@ -1,0 +1,44 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# PCA
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of PCA is to recreate the functionality of built-in functions for principal component analysis using my own code.
+
+## Installation
+
+You can install the development version of PCA like so:
+
+```{r}
+# devtools::install_github("trippzac/PCA", build_vignettes = T)
+```
+
+## Example
+
+This is a basic example of how to use PCA. Its use and output is similar to that
+of the built-in function "prcomp".
+
+```{r}
+library(PCA)
+set.seed(17)
+y <- matrix(rnorm(101*10), 101, 10)
+PCA(y)
+```
+
+
+I also intend to include some visualization functions and/or other dimension reduction techniques as a part of this package in the future.
