@@ -33,3 +33,9 @@ test_that("percentage of variance examples", {
   data(decathlon2)
   expect_equal(variance_explained_by_PCA(decathlon2[1:23, 1:10]), get_eigenvalue(FactoMineR::PCA(decathlon2[1:23, 1:10], graph = FALSE, ncp = 10)), tolerance = 1e-8)
 })
+
+test_that("scree_plot is working", {
+  set.seed(17)
+  y <- matrix(rnorm(101*10), 101, 10)
+  expect_no_error(scree_plot(y))
+})
