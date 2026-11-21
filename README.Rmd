@@ -20,27 +20,48 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/trippzac/PCA/graph/badge.svg)](https://app.codecov.io/gh/trippzac/PCA)
 <!-- badges: end -->
 
-The goal of PCA is to recreate the functionality of built-in functions for principal component analysis using my own code.
+## Overview
+
+The goal of PCA is to recreate the functionality of built-in functions for principal component analysis using my own code. Specifically, we provide two functions `PCA()` and `PCA_using_SVD()` that implement principal component analysis by computing eigenvectors and by computing singular values respectively. These are analogous to how each of the two built-in functions `prcomp()` and `princomp()` work (though we compare both of our functions to `prcomp()` for simplicity of testing). Additionally, we provide two additional functions `variance_explained_by_PCA()` and `scree_plot()` to help the user analyze which principal components they may wish to keep in their analysis. These functions are analogous to the functions found in the library "factoextra".
 
 ## Installation
 
 You can install the development version of PCA like so:
 
-```{r}
-# devtools::install_github("trippzac/PCA", build_vignettes = T)
+```{r, eval=FALSE}
+devtools::install_github("trippzac/PCA", build_vignettes = T)
 ```
 
-## Example
+## Usage
 
 This is a basic example of how to use PCA. Its use and output is similar to that
-of the built-in function "prcomp".
+of the built-in function `prcomp()`
 
 ```{r}
 library(PCA)
 set.seed(17)
 y <- matrix(rnorm(101*10), 101, 10)
 PCA(y)
+
+PCA_using_SVD(y)
+
+variance_explained_by_PCA(y)
+
+scree_plot(y)
+```
+
+We include one more example where there is slight numerical differences between our two functions for illustrative purposes.
+
+```{r}
+z <- matrix(1:24, ncol = 3)
+PCA(z)
+PCA_using_SVD(z)
 ```
 
 
-I also intend to include some visualization functions and/or other dimension reduction techniques as a part of this package in the future.
+Notice the difference in the numerical precision for the second eigenvector and the fact that the eigenvectors may be in a different order. The function `PCA_using_SVD()` appears to numerically match the results from `prcomp()`, and it appears to always choose the eigenvectors in the same order and with the same sign as well, making it easier to make a baseline comparison between the functions. 
+
+
+## Getting Help
+
+There are further examples in the help pages and in the vignettes of using these functions. Additionally, we perform benchmarking there as well to compare the speed of `PCA_using_SVD()` to `prcomp()`.

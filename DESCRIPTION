@@ -9,13 +9,20 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: Implements basic functionality of principal component analysis.
-    May provide visualization support as time permits.
+Description: Implements basic functionality of principal component analysis and 
+  additional functions to evaluate the variance of each component. 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Config/roxygen2/version: 8.1.1
 Roxygen: list(markdown = TRUE)
+Imports: 
+    ggplot2,
+    FactoMineR,
+    factoextra,
+    bench,
+    stats, 
+    ggbeeswarm
 Suggests: 
     knitr,
     rmarkdown,

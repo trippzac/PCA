@@ -14,15 +14,103 @@ knitr::opts_chunk$set(
 )
 ```
 
+# PCA Tutorial
+
 ```{r setup}
 library(PCA)
 ```
 
-To use 'PCA': 
+The main product of this package is our two functions to be used for principal component analysis (PCA), namely `PCA()` and `PCA_using_SVD()`. Both functions take in a matrix of data and some optional parameters for whether or not to scale or center the matrix before computing the principal components. The difference between these two functions is that `PCA()` computes eigenvalues directly, while `PCA_using_SVD()` uses singular value decomposition (SVD) to find the standard deviations and rotation matrix. We will begin by comparing these two functions to each other and the built-in function `prcomp()`. Afterwards, we will explore the other two functions we have created, namely `variance_explained_by_PCA()` and `scree_plot()`. These can be used to determine which principal components a statistician may wish to keep in their analysis. 
+
+## Comparing our principal component analysis functions
+
+ We will generate some random data below and illustrate their simple usage. 
 
 ```{r}
 set.seed(17)
 y <- matrix(rnorm(101*10), 101, 10)
 PCA(y)
+
+PCA_using_SVD(y)
+```
+
+We observe that both of our functions output two items: a list of standard deviations from the principal components and a rotation matrix that determines what the principal components are relative to the columns of our data and that our functions generally agree (up to sign, which does not change the choice of eigenvector). The format of our output is designed to match the output for the built-in function `prcomp()`. 
+
+```{r}
+prcomp(y, scale. = TRUE)
+```
+
+Notice that unlike `prcomp()`, our function chooses to scale our data by default. Our function still aligns when not using scaling however. 
+
+```{r}
+PCA_using_SVD(y, scale = FALSE)
+prcomp(y)
+```
+
+We further compare our functions to `prcomp()` on a real-world dataset and one artificial dataset chosen to have one principal component that explains most of the variation in the data. 
+
+```{r}
+# data that has one principal component explaining most of the data
+z <- matrix(1:24, ncol = 3)
+PCA(z)
+PCA_using_SVD(z)
+prcomp(z)
+
+# a real-world dataset (chosen so that scaling is more clearly the appropriate choice)
+PCA(as.matrix(USArrests))
+PCA_using_SVD(as.matrix(USArrests))
+prcomp(USArrests, scale. = TRUE)
+```
+
+As you may notice, there are slight numerical differences between `PCA()` and `prcomp()`, but this appears to be due to rounding and choices of ordering eigenvectors and/or choosing a sign for an eigenvector. No other types of errors have been observed, but given that the singular value decomposition method is known to be more numerically stable, `PCA_using_SVD()` may be a more optimal choice. 
+
+To finish our comparison of our functions, we will give a benchmark timing both of our functions compared to `prcomp()`.
+
+```{r}
+library(bench)
+set.seed(42)
+larger_dataset <- matrix(rnorm(10001*100), 10001)
+result = bench::mark(PCA(larger_dataset)$sdev, PCA_using_SVD(larger_dataset)$sdev, prcomp(larger_dataset, scale. = TRUE)$sdev)
+
+print(result)
+plot(result)
+```
+
+Note that we only compare our standard deviations to avoid comparing the signs and ordering of the eigenvectors. Additionally, while our function `PCA()` appears to run faster, it also does not have the same numerical stability as `prcomp()`. 
+
+## Making sense of our results using other functions in PCA
+
+In addition to having two different ways of computing our principal components, this package also provides two functions to help illustrate how much variability in the data each principal component is accounting for. The ideas for these functions were inspired by the functions `get_eigenvalue()` and `fviz_eig()` from the package "factoextra". 
+
+Our first function is `variance_explained_by_PCA()`. We will compute this on our three datasets we used in the previous section and compare their results to the analogous function in `get_eigenvalue()` from factoextra.
+
+```{r}
+# necessary libraries for using get_eigenvalue
+library(FactoMineR)
+library(factoextra)
+
+# compute the variance explained from our randomly generated data
+variance_explained_by_PCA(y)
+get_eigenvalue(FactoMineR::PCA(y, graph = FALSE, ncp = 10))
+
+# variance explained by our dataset with two small eigenvalues
+variance_explained_by_PCA(z)
+get_eigenvalue(FactoMineR::PCA(z, graph = FALSE, ncp = 3))
+
+# variance explained by our real-world data-set
+variance_explained_by_PCA(as.matrix(USArrests))
+get_eigenvalue(FactoMineR::PCA(USArrests, graph = FALSE, ncp = 4))
+```
+
+Additionally, we may plot the explained variance in our data using `scree_plot()`. The plot and/or the above function can be used to determine how many principal components an analyst wishes to keep in their data, say by determining a cut-off for cumulative variance or a cut-off for how much variance an individual principal component should explain. 
+
+```{r}
+# graph the explained variance on a randomly generated dataset
+scree_plot(y)
+fviz_eig(FactoMineR::PCA(y, graph = FALSE, ncp = 10))
+ 
+# graph explained variance on real-world dataset
+scree_plot(as.matrix(USArrests))
+fviz_eig(FactoMineR::PCA(USArrests, graph = FALSE, ncp = 4))
 ```
 

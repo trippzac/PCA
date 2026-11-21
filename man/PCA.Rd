@@ -4,11 +4,47 @@
 \alias{PCA}
 \title{Principal Component Analysis}
 \usage{
-PCA(x)
+PCA(x, center = TRUE, scale = TRUE)
 }
 \arguments{
 \item{x}{matrix of data to find the principle components of}
+
+\item{center}{whether or not to center the columns before finding eigenvectors}
+
+\item{scale}{whether or not to scale the columns before finding eigenvectors}
+}
+\value{
+A list is returned including the standard deviation of the principal components
+and the matrix of variable loadings. The variable names and dimension names are
+made to match the results of the built-in R function "prcomp" in order to directly
+compare the two.
 }
 \description{
-Principal Component Analysis
+Performs principal component analysis on a matrix of data. This function computes
+the eigenvalues and eigenvectors of the covariance matrix in order to return the
+result.
+}
+\note{
+Fundamentally, this function returns the same values as the built-in function
+"prcomp", but there have been observed numerical differences due to rounding,
+along with differences in the returned "rotation" matrix due to differences in
+signs of the eigenvectors and/or orderings of the eigenvectors. However, it is
+essentially the same result for the purposes of the principal component analysis,
+but it can be an issue when trying to directly compare their results.
+}
+\examples{
+# fix a large matrix of random normal values
+set.seed(17)
+y <- matrix(rnorm(101*10), 101, 10)
+PCA(y)
+
+# compare this to the result of the built-in function "prcomp"
+prcomp(y, scale. = TRUE)
+
+# similarly, we can do this on actual data, though we require our input to be in matrix form
+PCA(as.matrix(USArrests))
+
+# this is analogous to the following, which returns vectors with different signs
+prcomp(USArrests, scale. = TRUE)
+
 }
